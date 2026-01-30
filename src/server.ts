@@ -2,10 +2,12 @@ import express from "express";
 import mongoose from "mongoose";
 import Note from "./models/Note";
 import noteRoutes from "./routes/noteRoutes";
+import cors from "cors";
 
 const app = express();
 const port = 3000;
 
+app.use(cors());
 app.use(express.json());
 
 const mongoURI = "mongodb://localhost:27017/notes-db";
