@@ -4,14 +4,18 @@ import Note from "../models/Note";
 export const createNote = async (req: Request, res: Response) => {
   try {
     const { title, content } = req.body;
+    console.log("Receiving note:", { title, content });
 
     const newNote = new Note({ title, content });
 
     const savedNote = await newNote.save();
 
     res.status(201).json(savedNote);
-  } catch (error) {
-    res.status(500).json({ error: "Erro ao salvar a nota" });
+  } catch (error: any) {
+    console.error("ERRO AO SALVAR NO MONGODB:", error);
+    res
+      .status(500)
+      .json({ error: "Erro ao salvar a nota", details: error.message });
   }
 };
 

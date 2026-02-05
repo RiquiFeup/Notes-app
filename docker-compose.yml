@@ -1,11 +1,29 @@
-version: '3.8'
 services:
-  mongo-db:
-    image: mongo
+  mongodb:
+    image: mongo:latest
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+
+  backend:
+    build: . 
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/notes-db
+    depends_on:
+      - mongodb
+
+  frontend:
+    build: ./client 
+    ports:
+      - "5173:5173"
+    stdin_open: true 
+    tty: true
+    depends_on:
+      - backend
+    command: npm run dev -- --host 
 
 volumes:
   mongo-data:

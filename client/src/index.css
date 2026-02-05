@@ -170,11 +170,13 @@ dialog {
   color: var(--text-color);
   max-width: 500px;
   width: 90vw;
+  z-index: 1000;
 }
 
 dialog::backdrop {
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(4px);
+  z-index: 999;
 }
 
 .dialog-content {

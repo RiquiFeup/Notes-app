@@ -10,9 +10,8 @@ interface NoteModalProps {
 
 export function NoteModal({ isOpen, onClose, onSave, initialData }: NoteModalProps) {
     
-    const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
-    
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [content, setContent] = useState(initialData?.content || "");
 
 
   if (!isOpen) return null;
@@ -22,7 +21,7 @@ export function NoteModal({ isOpen, onClose, onSave, initialData }: NoteModalPro
       <dialog open className="note-dialog">
         <div className="dialog-content">
           <div className="dialog-header">
-            <h2 className="dialog-title">Add New Note</h2>
+            <h2 className="dialog-title">{initialData ? "Edit Note" : "Add New Note"}</h2>
             <button className="close-btn" onClick={onClose}>x</button>
           </div>
 

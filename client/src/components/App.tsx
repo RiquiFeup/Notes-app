@@ -5,11 +5,19 @@ import { Header } from './Header';
 import { NoteCard } from './NoteCard';
 import { NoteModal } from './NoteModal';
 
-
 function App() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark-theme');
+    } else {
+      document.documentElement.classList.remove('dark-theme');
+    }
+  }, [theme]); 
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -84,12 +92,16 @@ function App() {
     } catch (error) {
       console.error("Erro ao guardar:", error);
     }
-};
+  };
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
+  };
+
 
   return (
     <>
-      <Header onAddClick={() => setIsModalOpen(true)} />
-
+      <Header onAddClick={() => setIsModalOpen(true)} theme={theme} onThemeToggle={toggleTheme} />
       <NoteModal 
         key={editingNote?._id || 'new'} 
         isOpen={isModalOpen}
