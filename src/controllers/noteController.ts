@@ -1,15 +1,24 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import Note from "../models/Note";
+import { AuthRequest } from "../middleware/authMiddleware";
 
-export const createNote = async (req: Request, res: Response) => {
+export const createNote = async (req: AuthRequest, res: Response) => {
   try {
     const { title, content } = req.body;
-    console.log("Receiving note:", { title, content });
 
-    const newNote = new Note({ title, content });
+    if (!req.userId) {
+      return res.status(401).json({ error: "Usuário não autenticado." });
+    }
+
+    console.log("Receiving note:", { title, content, userId: req.userId });
+
+    const newNote = new Note({
+      title,
+      content,
+      userId: req.userId,
+    });
 
     const savedNote = await newNote.save();
-
     res.status(201).json(savedNote);
   } catch (error: any) {
     console.error("ERRO AO SALVAR NO MONGODB:", error);
@@ -19,28 +28,40 @@ export const createNote = async (req: Request, res: Response) => {
   }
 };
 
-export const getNotes = async (req: Request, res: Response) => {
+export const getNotes = async (req: AuthRequest, res: Response) => {
   try {
-    const notes = await Note.find();
+    if (!req.userId) {
+      return res.status(401).json({ error: "Usuário não autenticado." });
+    }
+
+    const notes = await Note.find({ userId: req.userId }).sort({
+      createdAt: -1,
+    });
     res.json(notes);
   } catch (error) {
     res.status(500).json({ error: "Erro ao buscar notas" });
   }
 };
 
-export const updateNote = async (req: Request, res: Response) => {
+export const updateNote = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const { title, content } = req.body;
 
-    const updatedNote = await Note.findByIdAndUpdate(
-      id,
+    if (!req.userId) {
+      return res.status(401).json({ error: "Usuário não autenticado." });
+    }
+
+    const updatedNote = await Note.findOneAndUpdate(
+      { _id: id, userId: req.userId } as any,
       { title, content },
       { new: true },
     );
 
     if (!updatedNote) {
-      return res.status(404).json({ error: "Nota não encontrada" });
+      return res
+        .status(404)
+        .json({ error: "Nota não encontrada ou sem permissão." });
     }
 
     res.json(updatedNote);
@@ -49,17 +70,26 @@ export const updateNote = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteNote = async (req: Request, res: Response) => {
+export const deleteNote = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
 
-    const deletedNote = await Note.findByIdAndDelete(id);
-
-    if (!deletedNote) {
-      return res.status(404).json({ error: "Nota não encontrada" });
+    if (!req.userId) {
+      return res.status(401).json({ error: "Usuário não autenticado." });
     }
 
-    res.status(200).json({ message: "Nota apagada" });
+    const deletedNote = await Note.findOneAndDelete({
+      _id: id,
+      userId: req.userId,
+    } as any);
+
+    if (!deletedNote) {
+      return res
+        .status(404)
+        .json({ error: "Nota não encontrada ou sem permissão." });
+    }
+
+    res.status(200).json({ message: "Nota apagada com sucesso" });
   } catch (error) {
     res.status(500).json({ error: "Erro ao apagar nota" });
   }

@@ -5,16 +5,18 @@ export interface INote extends Document {
   content: string;
 }
 
-const NoteSchema: Schema = new Schema({
-  title: {
-    type: String,
-    required: true,
+const NoteSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
-  content: {
-    type: String,
-    required: true,
-  },
-  date: { type: Date, default: Date.now },
-});
+  { timestamps: true },
+);
 
 export default mongoose.model<INote>("Note", NoteSchema);

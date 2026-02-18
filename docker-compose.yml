@@ -12,6 +12,7 @@ services:
       - "3000:3000"
     environment:
       - MONGO_URI=mongodb://mongodb:27017/notes-db
+      - JWT_SECRET=um_segredo_muito_longo_e_dificil_de_adivinhar_123!
     depends_on:
       - mongodb
 
