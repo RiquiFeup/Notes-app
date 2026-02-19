@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export const Login = () => {
   const [email, setEmail] = useState(localStorage.getItem('email') || '');
@@ -10,7 +11,7 @@ export const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const endpoint = isRegistering ? 'register' : 'login';
-    
+    const toastId = toast.loading('A processar...');
     try {
       const response = await fetch(`http://localhost:3000/auth/${endpoint}`, {
         method: 'POST',
@@ -26,16 +27,19 @@ export const Login = () => {
           localStorage.setItem('token', data.token);
           localStorage.setItem('userId', data.userId);
           localStorage.setItem('email', email); 
+          toast.success('Login efetuado com sucesso!', { id: toastId });
           navigate('/'); 
         } else {
-          alert("Conta criada! Agora faz login.");
+          toast.success('Conta criada com sucesso! Agora podes entrar.', { id: toastId });
+          navigate('/');
           setIsRegistering(false);
         }
       } else {
-        alert(data.message || "Erro na operação");
+        toast.error(data.message || "Erro na operação", { id: toastId });
       }
     } catch (error) {
       console.error("Erro ao conectar ao servidor:", error);
+      toast.error("Erro ao conectar ao servidor", { id: toastId });
     }
   };
 

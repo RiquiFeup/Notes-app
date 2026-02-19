@@ -408,3 +408,20 @@ dialog::backdrop {
 .auth-form .logout-btn:hover {
   background-color: #e63939; 
 }
+
+.header-search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.6rem 1.2rem;
+  border: 2px solid var(--surface-color);
+  border-radius: 0.75rem;
+  font-size: 0.95rem;
+  background: var(--surface-color);
+  color: var(--text-color);
+  transition: all 0.2s ease;
+}
+
+.header-search-input:focus {
+  outline: none;
+  border-color: var(--brand-color);
+}

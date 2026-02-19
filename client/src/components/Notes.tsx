@@ -9,12 +9,21 @@ export const Notes = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const navigate = useNavigate(); 
 
   const getAuthHeaders = () => ({
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${localStorage.getItem('token')}`
+  });
+
+  const filteredNotes = notes.filter((note) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      note.title.toLowerCase().includes(term) || 
+      note.content.toLowerCase().includes(term)
+    );
   });
 
   useEffect(() => {
@@ -97,8 +106,8 @@ export const Notes = () => {
   return (
     <>
 
-      <Header onAddClick={() => setIsModalOpen(true)} theme={theme} onThemeToggle={() => setTheme(theme === 'light' ? 'dark' : 'light')} />
-      
+      <Header onAddClick={() => setIsModalOpen(true)} theme={theme} onThemeToggle={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+       searchTerm={searchTerm} onSearchChange={setSearchTerm} />
       <NoteModal 
         key={editingNote?._id || 'new'} 
         isOpen={isModalOpen}
@@ -113,8 +122,13 @@ export const Notes = () => {
             <h2>Sem notas</h2>
             <p>Cria a tua primeira nota para começar!</p>
           </div>
+        ) : filteredNotes.length === 0 ? (
+          <div className="empty-state">
+            <h2>Nenhum resultado</h2>
+            <p>Não encontrámos notas com "{searchTerm}"</p>
+          </div>
         ) : (
-          notes.map((note) => (
+          filteredNotes.map((note) => (
             <NoteCard key={note._id} note={note} onDelete={handleDelete} onEdit={handleEdit} formatDate={formatDate} />
           ))
         )}

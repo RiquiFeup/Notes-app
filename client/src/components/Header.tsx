@@ -5,9 +5,11 @@ interface HeaderProps {
   onAddClick: () => void;
   theme: 'light' | 'dark';  
   onThemeToggle: () => void;
+  searchTerm: string;                     
+  onSearchChange: (value: string) => void;
 }
 
-export function Header({ onAddClick, theme, onThemeToggle }: HeaderProps) {
+export function Header({ onAddClick, theme, onThemeToggle, searchTerm, onSearchChange }: HeaderProps) {
   const navigate = useNavigate();
 
   return (
@@ -15,6 +17,16 @@ export function Header({ onAddClick, theme, onThemeToggle }: HeaderProps) {
       
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <h1 style={{ margin: 0 }}>Quick Notes</h1>
+      </div>
+      
+      <div style={{ flex: '2', display: 'flex', justifyContent: 'center' }}>
+        <input 
+          type="text" 
+          placeholder="Pesquisar notas..." 
+          className="header-search-input"
+          value={searchTerm}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
