@@ -4,10 +4,14 @@ import {
   getNotes,
   updateNote,
   deleteNote,
+  getAllNotes,
 } from "../controllers/noteController";
-import { protect } from "../middleware/authMiddleware";
+import { protect, requireRole } from "../middleware/authMiddleware";
 
 const router = express.Router();
+
+// Admin: ver todas as notas de todos os utilizadores
+router.get("/all", protect, requireRole("admin"), getAllNotes);
 
 router.post("/", protect, createNote);
 router.get("/", protect, getNotes);

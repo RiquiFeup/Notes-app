@@ -1,5 +1,6 @@
 import { Response } from "express";
 import Note from "../models/Note";
+import User from "../models/User";
 import { AuthRequest } from "../middleware/authMiddleware";
 
 export const createNote = async (req: AuthRequest, res: Response) => {
@@ -92,5 +93,28 @@ export const deleteNote = async (req: AuthRequest, res: Response) => {
     res.status(200).json({ message: "Nota apagada com sucesso" });
   } catch (error) {
     res.status(500).json({ error: "Erro ao apagar nota" });
+  }
+};
+
+// Admin: obter todas as notas de todos os utilizadores
+export const getAllNotes = async (req: AuthRequest, res: Response) => {
+  try {
+    const notes = await Note.find()
+      .populate("userId", "email")
+      .sort({ createdAt: -1 });
+
+    const formattedNotes = notes.map((note: any) => ({
+      _id: note._id,
+      title: note.title,
+      content: note.content,
+      userEmail: note.userId?.email || "Utilizador removido",
+      userId: note.userId?._id || note.userId,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    }));
+
+    res.json(formattedNotes);
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao buscar todas as notas" });
   }
 };

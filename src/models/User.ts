@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 export interface IUser extends Document {
   email: string;
   password: string;
+  role: "user" | "admin";
 }
 
 const UserSchema: Schema = new Schema({
@@ -18,15 +19,19 @@ const UserSchema: Schema = new Schema({
     type: String,
     required: true,
   },
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
 });
 
 UserSchema.pre("save", async function (this: IUser) {
-  if (!this.isModified("password")) return ;
+  if (!this.isModified("password")) return;
 
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    
   } catch (err) {
     throw err;
   }

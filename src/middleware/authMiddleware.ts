@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 
 export interface AuthRequest extends Request {
   userId?: string;
+  userRole?: "user" | "admin";
 }
 
 export const protect = (
@@ -21,12 +22,25 @@ export const protect = (
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
       id: string;
+      role: "user" | "admin";
     };
 
     req.userId = decoded.id;
+    req.userRole = decoded.role;
 
     next();
   } catch (error) {
     res.status(401).json({ message: "Token inválido ou expirado." });
   }
+};
+
+export const requireRole = (...roles: string[]) => {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.userRole || !roles.includes(req.userRole)) {
+      return res
+        .status(403)
+        .json({ message: "Acesso negado. Permissões insuficientes." });
+    }
+    next();
+  };
 };
