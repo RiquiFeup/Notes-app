@@ -47,11 +47,4 @@ Make sure you have the following installed on your machine:
 * [Node.js](https://nodejs.org/) (v18 or higher)
 * [Docker Desktop](https://www.docker.com/products/docker-desktop)
 
-### Environment Variables
-Create a `.env` file in the `backend` directory based on the following template:
 
-```env
-PORT=3000
-MONGO_URI=mongodb://mongo:27017/quicknotes
-JWT_SECRET=your_super_secret_jwt_key_here
-NODE_ENV=development
