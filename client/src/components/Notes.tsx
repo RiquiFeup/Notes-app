@@ -82,7 +82,7 @@ export const Notes = () => {
     try {
       const response = await fetch(url, {
         method,
-        headers: getAuthHeaders(), 
+        headers: getAuthHeaders(),
         body: JSON.stringify({ title, content }),
       });
 
@@ -91,7 +91,7 @@ export const Notes = () => {
         if (id) {
           setNotes(notes.map(n => n._id === id ? savedNote : n));
         } else {
-          setNotes([savedNote, ...notes]); 
+          setNotes([savedNote, ...notes]);
         }
         setIsModalOpen(false);
         setEditingNote(null);
